@@ -18,8 +18,4 @@
     <ProjectReference Include="..\BerberApp_Backend.Domain\BerberApp_Backend.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Behaviors\" />
-  </ItemGroup>
-
 </Project>
