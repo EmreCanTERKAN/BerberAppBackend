@@ -1,10 +1,11 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
 using MediatR;
+using TS.Result;
 
 namespace BerberApp_Backend.Application.Behaviors;
-public sealed class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
-    where TRequest : class, IRequest<TResponse>
+public sealed class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, Result<TResponse>>
+    where TRequest : class, IRequest<Result<TResponse>>
 {
     private readonly IEnumerable<IValidator<TRequest>> _validators;
 
@@ -13,7 +14,7 @@ public sealed class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<
         _validators = validators;
     }
 
-    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
+    public async Task<Result<TResponse>> Handle(TRequest request, RequestHandlerDelegate<Result<TResponse>> next, CancellationToken cancellationToken)
     {
         if (!_validators.Any())
         {
@@ -23,26 +24,23 @@ public sealed class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<
         var context = new ValidationContext<TRequest>(request);
 
         var errorDictionary = _validators
-            .Select(s => s.Validate(context))
-            .SelectMany(s => s.Errors)
-            .Where(s => s != null)
+            .Select(v => v.Validate(context))
+            .SelectMany(result => result.Errors)
+            .Where(failure => failure != null)
             .GroupBy(
-            s => s.PropertyName,
-            s => s.ErrorMessage, (propertyname, errorMessage) => new
-            {
-                Key = propertyname,
-                Values = errorMessage.Distinct().ToArray()
-            })
-            .ToDictionary(s => s.Key, s => s.Values[0]);
+                failure => failure.PropertyName,
+                failure => failure.ErrorMessage,
+                (propertyName, errorMessages) => new
+                {
+                    Key = propertyName,
+                    Values = errorMessages.Distinct().ToArray()
+                })
+            .ToDictionary(g => g.Key, g => g.Values[0]);
 
         if (errorDictionary.Any())
         {
-            var errors = errorDictionary.Select(s => new ValidationFailure
-            {
-                PropertyName = s.Key,
-                ErrorMessage = s.Key
-            });
-            throw new ValidationException(errors);
+            var errors = errorDictionary.Select(kv => kv.Value).ToList();
+            return Result<TResponse>.Failure(400, errors);
         }
 
         return await next();
