@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BerberApp_Backend.Domain", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BerberApp_Backend.Application", "BerberBackend.Application\BerberApp_Backend.Application.csproj", "{F141347B-9087-49E9-88A4-8539C27A90B5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BerberApp_Backend.Infrastructure", "BerberApp_Backend.Infrastructure\BerberApp_Backend.Infrastructure.csproj", "{0977A89A-59F8-449A-A14F-D196031A1BD6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{F141347B-9087-49E9-88A4-8539C27A90B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F141347B-9087-49E9-88A4-8539C27A90B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F141347B-9087-49E9-88A4-8539C27A90B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0977A89A-59F8-449A-A14F-D196031A1BD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0977A89A-59F8-449A-A14F-D196031A1BD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0977A89A-59F8-449A-A14F-D196031A1BD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0977A89A-59F8-449A-A14F-D196031A1BD6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
