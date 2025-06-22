@@ -8,6 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.6" />
+    <PackageReference Include="Scalar.AspNetCore" Version="2.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\BerberAppBackend.ServiceDefaults\BerberApp_Backend.ServiceDefaults.csproj" />
     <ProjectReference Include="..\BerberApp_Backend.Infrastructure\BerberApp_Backend.Infrastructure.csproj" />
     <ProjectReference Include="..\BerberBackend.Application\BerberApp_Backend.Application.csproj" />
