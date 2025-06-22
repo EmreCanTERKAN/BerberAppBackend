@@ -1,4 +1,5 @@
 ﻿using BerberApp_Backend.Domain.Employees;
+using FluentValidation;
 using GenericRepository;
 using Mapster;
 using MediatR;
@@ -12,6 +13,20 @@ public sealed record EmployeeCreateCommand(
     decimal Salary,
     PersonelInformation PersonelInformation,
     Address? Address) : IRequest<Result<string>>;
+
+public sealed class EmployeeCreateCommandValidator : AbstractValidator<EmployeeCreateCommand>
+{
+    public EmployeeCreateCommandValidator()
+    {
+        RuleFor(x => x.FirstName)
+            .MinimumLength(3).WithMessage("Ad en az 3 karakter olmalıdır.");
+        RuleFor(x => x.LastName)
+            .MinimumLength(3).WithMessage("Soyad en az 3 karakter olmalıdır.");
+        RuleFor(x => x.PersonelInformation.TCNo)
+            .MinimumLength(11).WithMessage("Tc Kimlik Numarası en az 11 karakter olmalıdır.")
+            .MaximumLength(11).WithMessage("Tc Kimlik Numarası en fazla 11 karakter olmalıdır.");
+    }
+}
 
 internal sealed class EmployeeCreateCommandHandler(
     IEmployeeRepository employeeRepository,
@@ -29,9 +44,9 @@ internal sealed class EmployeeCreateCommandHandler(
 
         Employee employee = request.Adapt<Employee>();
 
-        employeeRepository.Add(employee); 
+        employeeRepository.Add(employee);
 
-        await unitOfWork.SaveChangesAsync(cancellationToken); 
+        await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return "Personel kaydı başarıyla tamamlandı";
     }
