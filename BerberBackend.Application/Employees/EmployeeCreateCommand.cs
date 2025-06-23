@@ -9,7 +9,7 @@ namespace BerberApp_Backend.Application.Employees;
 public sealed record EmployeeCreateCommand(
     string FirstName,
     string LastName,
-    DateOnly BirthOfDate,
+    DateOnly? BirthOfDate,
     decimal Salary,
     PersonelInformation PersonelInformation,
     Address? Address) : IRequest<Result<string>>;
@@ -19,13 +19,42 @@ public sealed class EmployeeCreateCommandValidator : AbstractValidator<EmployeeC
     public EmployeeCreateCommandValidator()
     {
         RuleFor(x => x.FirstName)
+            .NotEmpty().WithMessage("Ad boş olamaz.")
             .MinimumLength(3).WithMessage("Ad en az 3 karakter olmalıdır.");
+
         RuleFor(x => x.LastName)
+            .NotEmpty().WithMessage("Soyad boş olamaz.")
             .MinimumLength(3).WithMessage("Soyad en az 3 karakter olmalıdır.");
-        RuleFor(x => x.PersonelInformation.TCNo)
-            .MinimumLength(11).WithMessage("Tc Kimlik Numarası en az 11 karakter olmalıdır.")
-            .MaximumLength(11).WithMessage("Tc Kimlik Numarası en fazla 11 karakter olmalıdır.");
+
+        RuleFor(x => x.BirthOfDate)
+            .NotNull().WithMessage("Doğum tarihi boş olamaz.")
+            .Must(BeAValidAge).WithMessage("Geçersiz doğum tarihi.");
+
+        RuleFor(x => x.Salary)
+            .GreaterThan(0).WithMessage("Maaş 0'dan büyük olmalıdır.");
+
+        // PersonelInformation null kontrolü
+        RuleFor(x => x.PersonelInformation)
+            .NotNull().WithMessage("Personel bilgileri boş olamaz.");
+
+        // PersonelInformation'ın içindeki TCNo kontrolü
+        When(x => x.PersonelInformation != null, () =>
+        {
+            RuleFor(x => x.PersonelInformation.TCNo)
+                .NotEmpty().WithMessage("TC Kimlik Numarası boş olamaz.")
+                .Length(11).WithMessage("TC Kimlik Numarası 11 karakter olmalıdır.")
+                .Matches(@"^\d{11}$").WithMessage("TC Kimlik Numarası sadece rakam içermelidir.");
+        });
     }
+
+    private bool BeAValidAge(DateOnly? birthDate)
+    {
+        if (!birthDate.HasValue) return false;
+
+        var age = DateTime.Today.Year - birthDate.Value.Year;
+        return age >= 18 && age <= 65;
+    }
+
 }
 
 internal sealed class EmployeeCreateCommandHandler(

@@ -1,6 +1,7 @@
 using BerberApp_Backend.Application;
 using BerberApp_Backend.Infrastructure;
 using BerberApp_Backend.WebApi.Controllers;
+using BerberApp_Backend.WebApi.Modules;
 using Microsoft.AspNetCore.OData;
 using Scalar.AspNetCore;
 using System.Threading.RateLimiting;
@@ -8,7 +9,7 @@ using System.Threading.RateLimiting;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
-builder.Services.AddApplication();
+builder.Services.AddApplicationRegistrar();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddCors();
 builder.Services.AddOpenApi();
@@ -44,6 +45,8 @@ app.UseCors(x => x
 .AllowAnyMethod()
 .SetIsOriginAllowed(t => true)
 .SetPreflightMaxAge(TimeSpan.FromMinutes(10)));
+
+app.RegisterRoutes();
 
 app.UseRateLimiter();
 

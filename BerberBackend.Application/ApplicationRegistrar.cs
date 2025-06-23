@@ -5,7 +5,7 @@ using FluentValidation;
 namespace BerberApp_Backend.Application;
 public static class ApplicationRegistrar
 {
-    public static IServiceCollection AddApplication(this IServiceCollection services)
+    public static IServiceCollection AddApplicationRegistrar(this IServiceCollection services)
     {
         services.AddMediatR(conf =>
         {

@@ -1,10 +1,12 @@
 ﻿using FluentValidation;
+using FluentValidation.Results;
 using MediatR;
 using TS.Result;
 
 namespace BerberApp_Backend.Application.Behaviors;
-public sealed class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, Result<TResponse>>
-    where TRequest : class, IRequest<Result<TResponse>>
+public sealed class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+    where TRequest : class, IRequest<TResponse>
+    where TResponse : class
 {
     private readonly IEnumerable<IValidator<TRequest>> _validators;
 
@@ -13,7 +15,7 @@ public sealed class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<
         _validators = validators;
     }
 
-    public async Task<Result<TResponse>> Handle(TRequest request, RequestHandlerDelegate<Result<TResponse>> next, CancellationToken cancellationToken)
+    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
         if (!_validators.Any())
         {
@@ -21,25 +23,35 @@ public sealed class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<
         }
 
         var context = new ValidationContext<TRequest>(request);
+        var validationResults = new List<FluentValidation.Results.ValidationResult>();
 
-        var errorDictionary = _validators
-            .Select(v => v.Validate(context))
-            .SelectMany(result => result.Errors)
-            .Where(failure => failure != null)
-            .GroupBy(
-                failure => failure.PropertyName,
-                failure => failure.ErrorMessage,
-                (propertyName, errorMessages) => new
-                {
-                    Key = propertyName,
-                    Values = errorMessages.Distinct().ToArray()
-                })
-            .ToDictionary(g => g.Key, g => g.Values[0]);
-
-        if (errorDictionary.Any())
+        foreach (var validator in _validators)
         {
-            var errors = errorDictionary.Select(kv => kv.Value).ToList();
-            return Result<TResponse>.Failure(400, errors);
+            var result = await validator.ValidateAsync(context, cancellationToken);
+            validationResults.Add(result);
+        }
+
+        var failures = validationResults
+            .SelectMany(r => r.Errors)
+            .Where(f => f != null)
+            .ToList();
+
+        if (failures.Any())
+        {
+            var errors = failures.Select(f => f.ErrorMessage).ToList();
+
+            var resultType = typeof(TResponse);
+            if (resultType.IsGenericType && resultType.GetGenericTypeDefinition() == typeof(Result<>))
+            {
+                var innerType = resultType.GetGenericArguments()[0];
+                var failureMethod = typeof(Result<>).MakeGenericType(innerType)
+                    .GetMethod("Failure", new[] { typeof(int), typeof(List<string>) });
+
+                var result = failureMethod?.Invoke(null, new object[] { 400, errors });
+                return (TResponse)result!;
+            }
+
+            throw new ValidationException("Validation failed", failures);
         }
 
         return await next();
