@@ -1,5 +1,6 @@
 using BerberApp_Backend.Application;
 using BerberApp_Backend.Infrastructure;
+using BerberApp_Backend.WebApi;
 using BerberApp_Backend.WebApi.Controllers;
 using BerberApp_Backend.WebApi.Modules;
 using Microsoft.AspNetCore.OData;
@@ -36,6 +37,7 @@ builder.Services.AddRateLimiter(options =>
     }));
 });
 
+builder.Services.AddExceptionHandler<ExceptionHandler>().AddProblemDetails();
 
 var app = builder.Build();
 
@@ -47,6 +49,8 @@ app.UseCors(x => x
 .SetPreflightMaxAge(TimeSpan.FromMinutes(10)));
 
 app.RegisterRoutes();
+
+app.UseExceptionHandler();
 
 app.UseRateLimiter();
 
