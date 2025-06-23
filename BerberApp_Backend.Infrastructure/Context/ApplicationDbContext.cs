@@ -1,8 +1,9 @@
 ﻿using BerberApp_Backend.Domain.Employees;
+using GenericRepository;
 using Microsoft.EntityFrameworkCore;
 
 namespace BerberApp_Backend.Infrastructure.Context;
-internal sealed class ApplicationDbContext : DbContext
+internal sealed class ApplicationDbContext : DbContext,IUnitOfWork
 {
     public ApplicationDbContext()
     {

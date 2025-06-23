@@ -1,4 +1,5 @@
 ﻿using BerberApp_Backend.Infrastructure.Context;
+using GenericRepository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,6 +21,8 @@ public static class InfrastructureRegistrar
         .UsingRegistrationStrategy(Scrutor.RegistrationStrategy.Skip)
         .AsImplementedInterfaces()
         .WithScopedLifetime());
+
+        services.AddScoped<IUnitOfWork>(srv => srv.GetRequiredService<ApplicationDbContext>());
 
         return services;
     }

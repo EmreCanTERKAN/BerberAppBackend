@@ -1,5 +1,7 @@
 using BerberApp_Backend.Application;
 using BerberApp_Backend.Infrastructure;
+using BerberApp_Backend.WebApi.Controllers;
+using Microsoft.AspNetCore.OData;
 using Scalar.AspNetCore;
 using System.Threading.RateLimiting;
 
@@ -10,7 +12,16 @@ builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddCors();
 builder.Services.AddOpenApi();
-builder.Services.AddControllers();
+
+builder.Services.AddControllers().AddOData(opt =>
+    opt
+    .Select()
+    .Filter()
+    .Count()
+    .Expand()
+    .OrderBy()
+    .SetMaxTop(null)
+    .AddRouteComponents("odata", AppODataController.GetEdmModel()));
 
 builder.Services.AddRateLimiter(options =>
 {
