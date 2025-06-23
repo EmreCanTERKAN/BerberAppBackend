@@ -23,9 +23,9 @@ public class AppODataController(
     }
 
     [HttpGet("employees")]
-    public async Task<IActionResult> GetAllEmployees()
+    public async Task<IQueryable<EmployeeGetAllQueryResponse>> GetAllEmployees()
     {
         var response = await sender.Send(new EmployeeGetAllQuery());
-        return Ok(response);
+        return response;
     }
 }
