@@ -11,3 +11,4 @@ public abstract class Entity
     public DateTimeOffset DeleteAt { get; set; }
     public bool IsDeleted { get; set; }
 }
+                    

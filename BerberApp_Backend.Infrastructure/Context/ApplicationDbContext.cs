@@ -1,10 +1,13 @@
 ﻿using BerberApp_Backend.Domain.Abstractions;
 using BerberApp_Backend.Domain.Employees;
+using BerberApp_Backend.Domain.Users;
 using GenericRepository;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace BerberApp_Backend.Infrastructure.Context;
-internal sealed class ApplicationDbContext : DbContext, IUnitOfWork
+internal sealed class ApplicationDbContext : IdentityDbContext<AppUser, IdentityRole<Guid>,Guid>, IUnitOfWork
 {
     public ApplicationDbContext()
     {
@@ -19,6 +22,11 @@ internal sealed class ApplicationDbContext : DbContext, IUnitOfWork
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+        modelBuilder.Ignore<IdentityUserClaim<Guid>>();
+        modelBuilder.Ignore<IdentityRoleClaim<Guid>>();
+        modelBuilder.Ignore<IdentityUserToken<Guid>>();
+        modelBuilder.Ignore<IdentityUserLogin<Guid>>();
+        modelBuilder.Ignore<IdentityUserRole<Guid>>();
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

@@ -1,5 +1,7 @@
-﻿using BerberApp_Backend.Infrastructure.Context;
+﻿using BerberApp_Backend.Domain.Users;
+using BerberApp_Backend.Infrastructure.Context;
 using GenericRepository;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +16,12 @@ public static class InfrastructureRegistrar
             string connectionString = configuration.GetConnectionString("SqlServer")!;
             opt.UseSqlServer(connectionString);
         });
+
+        services
+            .AddIdentity<AppUser, IdentityRole<Guid>>()
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddRoles<IdentityRole<Guid>>()
+            .AddDefaultTokenProviders();
 
         services.Scan(opt => opt
         .FromAssemblies(typeof(InfrastructureRegistrar).Assembly)
