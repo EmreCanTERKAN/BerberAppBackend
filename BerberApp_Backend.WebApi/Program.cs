@@ -2,6 +2,7 @@ using BerberApp_Backend.Application;
 using BerberApp_Backend.Infrastructure;
 using BerberApp_Backend.WebApi;
 using BerberApp_Backend.WebApi.Controllers;
+using BerberApp_Backend.WebApi.Extensions;
 using BerberApp_Backend.WebApi.Modules;
 using Microsoft.AspNetCore.OData;
 using Scalar.AspNetCore;
@@ -58,5 +59,7 @@ app.MapOpenApi();
 app.MapScalarApiReference();
 app.MapDefaultEndpoints();
 app.MapControllers();
+
+ExtensionsMiddleware.CreateFirstUser(app);
 
 app.Run();

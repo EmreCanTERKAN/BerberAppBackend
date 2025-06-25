@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BerberApp_Backend.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250625095003_mg_3")]
-    partial class mg_3
+    [Migration("20250625143838_mg_1")]
+    partial class mg_1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -37,8 +37,14 @@ namespace BerberApp_Backend.Infrastructure.Migrations
                     b.Property<DateTimeOffset>("CreateAt")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<Guid>("CreateUserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTimeOffset>("DeleteAt")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid?>("DeleteUserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -57,6 +63,9 @@ namespace BerberApp_Backend.Infrastructure.Migrations
                     b.Property<DateTimeOffset>("UpdateAt")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<Guid?>("UpdateUserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.ToTable("Employees");
@@ -74,6 +83,18 @@ namespace BerberApp_Backend.Infrastructure.Migrations
                     b.Property<string>("ConcurrencyStamp")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTimeOffset>("CreateAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("CreateUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("DeleteAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid?>("DeleteUserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
@@ -83,6 +104,9 @@ namespace BerberApp_Backend.Infrastructure.Migrations
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("varchar(50)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<string>("LastName")
                         .IsRequired()
@@ -114,6 +138,12 @@ namespace BerberApp_Backend.Infrastructure.Migrations
 
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset>("UpdateAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid?>("UpdateUserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("UserName")
                         .HasColumnType("varchar(15)");

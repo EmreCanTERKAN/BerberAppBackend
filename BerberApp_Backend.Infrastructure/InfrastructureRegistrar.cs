@@ -21,7 +21,7 @@ public static class InfrastructureRegistrar
             .AddIdentity<AppUser, IdentityRole<Guid>>(opt =>
             {
                 opt.Password.RequiredLength = 1;
-                opt.Password.RequireNonAlphanumeric = true;
+                opt.Password.RequireNonAlphanumeric = false;
                 opt.Password.RequireDigit = false;
                 opt.Password.RequireLowercase = false;
                 opt.Password.RequireUppercase = false;
