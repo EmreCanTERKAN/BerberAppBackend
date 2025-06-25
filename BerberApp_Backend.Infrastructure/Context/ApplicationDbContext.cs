@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace BerberApp_Backend.Infrastructure.Context;
-internal sealed class ApplicationDbContext : IdentityDbContext<AppUser, IdentityRole<Guid>,Guid>, IUnitOfWork
+internal sealed class ApplicationDbContext : IdentityDbContext<AppUser, IdentityRole<Guid>, Guid>, IUnitOfWork
 {
     public ApplicationDbContext()
     {
@@ -26,7 +26,22 @@ internal sealed class ApplicationDbContext : IdentityDbContext<AppUser, Identity
         modelBuilder.Ignore<IdentityRoleClaim<Guid>>();
         modelBuilder.Ignore<IdentityUserToken<Guid>>();
         modelBuilder.Ignore<IdentityUserLogin<Guid>>();
-        modelBuilder.Ignore<IdentityUserRole<Guid>>();
+        //modelBuilder.Ignore<IdentityUserRole<Guid>>();
+
+        modelBuilder.Entity<IdentityUserRole<Guid>>(entity =>
+        {
+            entity.HasKey(ur => new { ur.UserId, ur.RoleId });
+
+            entity.HasOne<AppUser>()
+                  .WithMany()
+                  .HasForeignKey(ur => ur.UserId)
+                  .IsRequired();
+
+            entity.HasOne<IdentityRole<Guid>>()
+                  .WithMany()
+                  .HasForeignKey(ur => ur.RoleId)
+                  .IsRequired();
+        });
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
