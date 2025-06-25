@@ -18,7 +18,17 @@ public static class InfrastructureRegistrar
         });
 
         services
-            .AddIdentity<AppUser, IdentityRole<Guid>>()
+            .AddIdentity<AppUser, IdentityRole<Guid>>(opt =>
+            {
+                opt.Password.RequiredLength = 1;
+                opt.Password.RequireNonAlphanumeric = true;
+                opt.Password.RequireDigit = false;
+                opt.Password.RequireLowercase = false;
+                opt.Password.RequireUppercase = false;
+                opt.Lockout.MaxFailedAccessAttempts = 5;
+                opt.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+                opt.SignIn.RequireConfirmedEmail = true;
+            })
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddRoles<IdentityRole<Guid>>()
             .AddDefaultTokenProviders();
