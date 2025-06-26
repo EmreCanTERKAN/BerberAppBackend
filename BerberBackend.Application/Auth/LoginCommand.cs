@@ -1,4 +1,5 @@
-﻿using BerberApp_Backend.Domain.Users;
+﻿using BerberApp_Backend.Application.Services;
+using BerberApp_Backend.Domain.Users;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -16,7 +17,8 @@ public sealed record LoginCommandResponse
 
 internal sealed class LoginCommandHanlder(
     UserManager<AppUser> userManager,
-    SignInManager<AppUser> signInManager) : IRequestHandler<LoginCommand, Result<LoginCommandResponse>>
+    SignInManager<AppUser> signInManager,
+    IJwtProvider jwtProvider) : IRequestHandler<LoginCommand, Result<LoginCommandResponse>>
 {
     public async Task<Result<LoginCommandResponse>> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
@@ -49,10 +51,11 @@ internal sealed class LoginCommandHanlder(
             return (500, "Şifreniz yanlış");
         }
 
-        //token üret
+        var token = await jwtProvider.CreateTokenAsync(user,request.Password,cancellationToken);
+
         var response = new LoginCommandResponse
         {
-            AccessToken = ""
+            AccessToken = token
         };
 
         return response;

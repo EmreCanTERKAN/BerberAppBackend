@@ -1,5 +1,6 @@
 ﻿using BerberApp_Backend.Domain.Users;
 using BerberApp_Backend.Infrastructure.Context;
+using BerberApp_Backend.Infrastructure.Options;
 using GenericRepository;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +17,8 @@ public static class InfrastructureRegistrar
             string connectionString = configuration.GetConnectionString("SqlServer")!;
             opt.UseSqlServer(connectionString);
         });
+
+        services.Configure<JwtOptions>(configuration.GetSection("Jwt"));
 
         services
             .AddIdentity<AppUser, IdentityRole<Guid>>(opt =>
