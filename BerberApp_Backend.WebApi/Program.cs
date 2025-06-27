@@ -58,7 +58,7 @@ app.UseRateLimiter();
 app.MapOpenApi();
 app.MapScalarApiReference();
 app.MapDefaultEndpoints();
-app.MapControllers();
+app.MapControllers().RequireAuthorization(); 
 
 ExtensionsMiddleware.CreateFirstUser(app);
 

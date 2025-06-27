@@ -2,6 +2,7 @@
 using BerberApp_Backend.Infrastructure.Context;
 using BerberApp_Backend.Infrastructure.Options;
 using GenericRepository;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -19,6 +20,7 @@ public static class InfrastructureRegistrar
         });
 
         services.Configure<JwtOptions>(configuration.GetSection("Jwt"));
+        services.ConfigureOptions<JwtOptionsSetup>();
 
         services
             .AddIdentity<AppUser, IdentityRole<Guid>>(opt =>
@@ -35,6 +37,14 @@ public static class InfrastructureRegistrar
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddRoles<IdentityRole<Guid>>()
             .AddDefaultTokenProviders();
+
+        services.AddAuthentication(opt =>
+        {
+            opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        }).AddJwtBearer();
+
+        services.AddAuthorization();
 
         services.Scan(opt => opt
         .FromAssemblies(typeof(InfrastructureRegistrar).Assembly)
