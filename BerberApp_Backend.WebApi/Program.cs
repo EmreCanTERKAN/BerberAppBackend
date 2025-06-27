@@ -10,6 +10,11 @@ using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddResponseCompression(opt =>
+{
+    opt.EnableForHttps = true;
+});
+
 builder.AddServiceDefaults();
 builder.Services.AddApplicationRegistrar();
 builder.Services.AddInfrastructure(builder.Configuration);
@@ -42,6 +47,12 @@ builder.Services.AddExceptionHandler<ExceptionHandler>().AddProblemDetails();
 
 var app = builder.Build();
 
+app.MapOpenApi();
+app.MapScalarApiReference();
+app.MapDefaultEndpoints();
+
+app.UseHttpsRedirection();
+
 app.UseCors(x => x
 .AllowAnyHeader()
 .AllowCredentials()
@@ -49,15 +60,17 @@ app.UseCors(x => x
 .SetIsOriginAllowed(t => true)
 .SetPreflightMaxAge(TimeSpan.FromMinutes(10)));
 
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.UseResponseCompression();
+
 app.RegisterRoutes();
 
 app.UseExceptionHandler();
 
 app.UseRateLimiter();
 
-app.MapOpenApi();
-app.MapScalarApiReference();
-app.MapDefaultEndpoints();
 app.MapControllers().RequireAuthorization(); 
 
 ExtensionsMiddleware.CreateFirstUser(app);
